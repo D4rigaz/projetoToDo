@@ -3,10 +3,12 @@
 Um gerenciador de tarefas moderno e minimalista para Windows, desenvolvido com **Python** e **Flet**.
 
 ## ✨ Funcionalidades
-- **Interface Moderna:** Design em Dark Mode com visual polido.
-- **Filtros Dinâmicos:** Visualize todas, ativas ou tarefas completas.
+- **Quadro Kanban:** Organize tarefas em colunas: Para Fazer, Fazendo e Concluído.
+- **Categorias Coloridas:** Classifique tarefas com cores (Trabalho, Pessoal, Urgente, Outros).
+- **Interface Moderna:** Design em Dark Mode com visual polido e intuitivo.
+- **Drag & Drop:** Arraste e solte tarefas entre as colunas para atualizar o status.
 - **Persistência de Dados:** Suas tarefas são salvas automaticamente em um arquivo JSON local.
-- **Interatividade:** Adicione tarefas com `Enter`, edite ou remova com um clique.
+- **Interatividade:** Adicione tarefas com um clique e visualize a categoria instantaneamente.
 
 ## 🚀 Como Executar
 

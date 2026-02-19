@@ -10,6 +10,11 @@
 
 ## 📅 Jornada de Evolução
 
+### 🔵 Categorias Coloridas (v4.6)
+- **Visualização:** Adicionado indicador lateral de cor nos cards.
+- **Interação:** Dropdown para seleção de categoria ao criar tarefa.
+- **Categorias:** Trabalho (Azul), Pessoal (Laranja), Urgente (Vermelho), Outros (Cinza).
+
 ### 🔵 Título Profissional (v4.5)
 - **Mudança:** Título alterado para "Quadro Kanban Darigaz" na branch DEV e validado pelo QA.
 
@@ -20,7 +25,7 @@
 
 ## 📋 Próximos Passos (Backlog)
 - [ ] O quadro Kanban Darigaz ainda precisa de evolução contínua para atingir o nível máximo.
-- [ ] Adicionar categorias coloridas para tarefas.
+- [x] Adicionar categorias coloridas para tarefas.
 - [ ] Implementar datas de entrega (Deadlines).
 - [ ] Criar sistema de notificações no navegador.
 - [ ] Deploy em servidor remoto (Replit/Vercel).
