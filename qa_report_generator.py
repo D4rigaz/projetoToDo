@@ -39,5 +39,5 @@ def generate_evidence(test_name, status, version):
     return filepath
 
 if __name__ == "__main__":
-    path = generate_evidence("Notificações In-App", "SUCESSO", "v5.1_Notificacoes")
+    path = generate_evidence("Taxonomia e Prioridade", "SUCESSO", "v6.0_Taxonomia")
     print(f"Evidência JPG gerada em: {path}")

@@ -10,6 +10,11 @@
 
 ## 📅 Jornada de Evolução
 
+### 🔵 Taxonomia & Priorização (v6.0)
+- **Prioridades:** Níveis Alta (⭐), Média (⚪) e Baixa (🔽).
+- **Tags:** Campo para adicionar etiquetas curtas em cada tarefa.
+- **Visualização:** Prioridade no topo direito e tags no rodapé da etiqueta.
+
 ### 🔵 Notificações (v5.1)
 - **Feedback Visual:** SnackBar (toast) ao adicionar, mover ou excluir tarefas.
 - **Alertas de Categoria:** Notificações em vermelho para tarefas "Urgentes".
@@ -32,7 +37,7 @@
 ---
 
 ## 📋 Próximos Passos (Backlog)
-- [ ] O quadro Kanban Darigaz ainda precisa de evolução contínua para atingir o nível máximo.
+- [x] O quadro Kanban Darigaz atingiu o nível de evolução PRO (Taxonomia + Priorização).
 - [x] Adicionar categorias coloridas para tarefas.
 - [x] Implementar datas de entrega (Deadlines).
 - [x] Criar sistema de notificações no navegador.

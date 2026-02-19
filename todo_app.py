@@ -61,6 +61,12 @@ def main(page: ft.Page):
 
         for index, task in enumerate(tasks_data):
             cat_color = task.get("color", "#95a5a6")
+            priority = task.get("priority", "Média")
+            
+            # Ícone de Prioridade
+            prio_icon = "⭐" if priority == "Alta" else ("⚪" if priority == "Média" else "🔽")
+            prio_color = "#e74c3c" if priority == "Alta" else ("#f1c40f" if priority == "Média" else "#2ecc71")
+
             task_card = ft.Draggable(
                 group="kanban",
                 data=str(index),
@@ -71,9 +77,15 @@ def main(page: ft.Page):
                             height=6, 
                             bgcolor=cat_color, 
                             border_radius=3, 
-                            width=40,
+                            width=30,
                             top=8,
-                            left=37 # Centralizado (115/2 - 40/2)
+                            left=5
+                        ),
+                        # Prioridade (Topo Direita)
+                        ft.Container(
+                            content=ft.Text(prio_icon, size=9, color=prio_color),
+                            top=5,
+                            right=25
                         ),
                         # Texto da Tarefa (Centro)
                         ft.Container(
@@ -86,19 +98,14 @@ def main(page: ft.Page):
                             ),
                             alignment=ft.Alignment(0, 0),
                             expand=True,
-                            padding=ft.padding.only(top=10, left=5, right=5, bottom=12)
+                            padding=ft.padding.only(top=10, left=5, right=5, bottom=15)
                         ),
-                        # Deadline (Rodapé Esquerdo)
-                        ft.Container(
-                            content=ft.Text(
-                                value=task.get("deadline", ""),
-                                size=9,
-                                color="#AAAAAA",
-                                italic=True
-                            ),
-                            bottom=2,
-                            left=5
-                        ),
+                        # Tags e Deadline (Rodapé)
+                        ft.Row([
+                            ft.Text(task.get("deadline", ""), size=8, color="#AAAAAA", italic=True),
+                            ft.Text(task.get("tags", ""), size=8, color="#3498db", weight="bold"),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, bottom=2, left=5, right=5),
+                        
                         # Botão Excluir (Canto Superior Direito) - Estilo Container para evitar erros de Ícone
                         ft.Container(
                             content=ft.Text("X", color="#FF5555", weight="bold", size=10),
@@ -136,14 +143,17 @@ def main(page: ft.Page):
                 "status": "todo",
                 "category": cat_name,
                 "color": cat_color,
-                "deadline": deadline_field.value if deadline_field.value else ""
+                "deadline": deadline_field.value if deadline_field.value else "",
+                "priority": priority_dropdown.value,
+                "tags": tags_field.value if tags_field.value else ""
             })
             input_field.value = ""
             deadline_field.value = ""
+            tags_field.value = ""
             save_db()
             render_board()
             
-            notif_color = "#e74c3c" if cat_name == "Urgente" else "#2ecc71"
+            notif_color = "#e74c3c" if cat_name == "Urgente" or priority_dropdown.value == "Alta" else "#2ecc71"
             show_notification(f"Tarefa '{cat_name}' adicionada!", notif_color)
 
     def delete_task(idx):
@@ -189,6 +199,29 @@ def main(page: ft.Page):
         text_size=12
     )
 
+    priority_dropdown = ft.Dropdown(
+        options=[
+            ft.dropdown.Option("Alta"),
+            ft.dropdown.Option("Média"),
+            ft.dropdown.Option("Baixa")
+        ],
+        width=100,
+        value="Média",
+        text_size=12,
+        bgcolor="#111111",
+        border_color="#333333",
+        color="white",
+        content_padding=10
+    )
+
+    tags_field = ft.TextField(
+        hint_text="Tags...", 
+        width=100,
+        bgcolor="#111111",
+        on_submit=add_task,
+        text_size=12
+    )
+
     todo_list = ft.Row(wrap=True, spacing=10, width=240, alignment=ft.MainAxisAlignment.CENTER)
     doing_list = ft.Row(wrap=True, spacing=10, width=240, alignment=ft.MainAxisAlignment.CENTER)
     done_list = ft.Row(wrap=True, spacing=10, width=240, alignment=ft.MainAxisAlignment.CENTER)
@@ -222,6 +255,8 @@ def main(page: ft.Page):
             selected_category,
             input_field, 
             deadline_field,
+            priority_dropdown,
+            tags_field,
             ft.ElevatedButton(
                 content=ft.Text("ADICIONAR", color="white", weight="bold"),
                 on_click=add_task, 
