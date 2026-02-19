@@ -3,122 +3,154 @@ import json
 import os
 
 def main(page: ft.Page):
-    # --- REVISOR: Configurações de Layout Kanban ---
-    page.title = "quadro to do list Darigaz - KANBAN"
-    page.bgcolor = "#0D1117"
-    page.horizontal_alignment = "center"
-    page.scroll = "adaptive"
-    page.padding = 30
+    # --- REVISOR (DevOps): Configuração de Blindagem Total ---
+    page.title = "Quadro Kanban Darigaz"
+    page.bgcolor = "#000000"
     page.theme_mode = "dark"
+    page.padding = 30
+    page.window_width = 1100
+    page.window_height = 800
+    page.horizontal_alignment = "center"
 
     data_file = "kanban_data.json"
+    tasks_data = []
 
-    # --- LÓGICA DO QA (CRUD KANBAN) ---
-    def save_data():
-        data = []
-        # Coleta tarefas de todas as colunas
-        for col_name, col_view in zip(["todo", "doing", "done"], [todo_col, doing_col, done_col]):
-            for task_card in col_view.controls:
-                # O nome da tarefa está no primeiro controle (Text) do card
-                task_name = task_card.controls[0].value
-                data.append({"name": task_name, "status": col_name})
-        
+    def load_db():
+        nonlocal tasks_data
+        if os.path.exists(data_file):
+            try:
+                with open(data_file, "r") as f:
+                    tasks_data = json.load(f)
+            except: tasks_data = []
+        else: tasks_data = []
+
+    def save_db():
         with open(data_file, "w") as f:
-            json.dump(data, f)
-        page.update()
+            json.dump(tasks_data, f)
 
-    def move_task(task_obj, current_status, direction):
-        # Remove da coluna atual
-        if current_status == "todo":
-            todo_col.controls.remove(task_obj)
-            new_status = "doing"
-        elif current_status == "doing":
-            doing_col.controls.remove(task_obj)
-            new_status = "done" if direction == "forward" else "todo"
-        elif current_status == "done":
-            done_col.controls.remove(task_obj)
-            new_status = "doing"
+    # --- LÓGICA DE ARRASTE (Drag & Drop) ---
+    def drag_accept(e):
+        src_idx = int(e.src_data)
+        dest_status = e.control.data
+        tasks_data[src_idx]["status"] = dest_status
+        save_db()
+        render_board()
 
-        # Adiciona na nova coluna
-        create_task_ui(task_obj.controls[0].value, new_status)
-        save_data()
+    def render_board():
+        # Limpando as listas de controles
+        todo_list.controls.clear()
+        doing_list.controls.clear()
+        done_list.controls.clear()
 
-    def delete_task(task_obj, status):
-        if status == "todo": todo_col.controls.remove(task_obj)
-        elif status == "doing": doing_col.controls.remove(task_obj)
-        elif status == "done": done_col.controls.remove(task_obj)
-        save_data()
+        for index, task in enumerate(tasks_data):
+            # QA: Usando TextButton com Content para evitar erros de IconButton
+            btn_delete = ft.TextButton(
+                content=ft.Icon("delete", color="#FF5555", size=18),
+                on_click=lambda e, idx=index: delete_task(idx)
+            )
 
-    def create_task_ui(name, status="todo"):
-        # QA: Criando o Card de Tarefa (Agnóstico e Sem Containers complexos)
-        task_card = ft.Column(spacing=5, width=250)
-        
-        # Botões de ação baseados no status
-        actions = ft.Row(alignment="spaceBetween")
-        
-        btn_delete = ft.IconButton(icon="delete", icon_color="#F85149", icon_size=18, on_click=lambda _: delete_task(task_card, status))
-        
-        move_buttons = []
-        if status != "todo":
-            move_buttons.append(ft.IconButton(icon="arrow_back", icon_color="white70", on_click=lambda _: move_task(task_card, status, "back")))
-        if status != "done":
-            move_buttons.append(ft.IconButton(icon="arrow_forward", icon_color="indigoaccent", on_click=lambda _: move_task(task_card, status, "forward")))
+            # Card Arrastável (Draggable)
+            task_card = ft.Draggable(
+                group="kanban",
+                data=str(index),
+                content=ft.Container(
+                    content=ft.Column([
+                        ft.Text(task["name"], weight="bold", size=14, color="white"),
+                        ft.Row([
+                            ft.Text("ARRASTE", size=10, color="white30"),
+                            btn_delete
+                        ], alignment="spaceBetween")
+                    ], spacing=5),
+                    bgcolor="#1A1A1A",
+                    padding=10,
+                    border_radius=10,
+                    border=ft.border.all(1, "#333333"),
+                    width=230,
+                )
+            )
 
-        actions.controls = [btn_delete, ft.Row(move_buttons)]
-
-        task_card.controls = [
-            ft.Text(name, weight="bold", size=16, color="white"),
-            actions,
-            ft.Divider(height=1, color="white10")
-        ]
-
-        if status == "todo": todo_col.controls.append(task_card)
-        elif status == "doing": doing_col.controls.append(task_card)
-        elif status == "done": done_col.controls.append(task_card)
+            if task["status"] == "todo": todo_list.controls.append(task_card)
+            elif task["status"] == "doing": doing_list.controls.append(task_card)
+            elif task["status"] == "done": done_list.controls.append(task_card)
         
         page.update()
 
-    def on_add_click(e):
+    def add_task(e):
         if input_field.value:
-            create_task_ui(input_field.value, "todo")
+            tasks_data.append({"name": input_field.value, "status": "todo"})
             input_field.value = ""
-            save_data()
+            save_db()
+            render_board()
 
-    # --- COMPONENTES DO QUADRO (Revisor: Estrutura Plana) ---
-    title = ft.Text("quadro to do list Darigaz", size=40, weight="bold", color="indigoaccent")
+    def delete_task(idx):
+        tasks_data.pop(idx)
+        save_db()
+        render_board()
+
+    # --- COMPONENTES DA UI ---
+    title = ft.Text("Quadro Kanban Darigaz", size=40, weight="bold", color="#5865F2")
     
-    input_field = ft.TextField(hint_text="Nova tarefa para o quadro...", width=300, bgcolor="#161B22")
-    add_btn = ft.ElevatedButton(content=ft.Text("ADICIONAR", weight="bold"), on_click=on_add_click, bgcolor="indigoaccent", color="white", height=45)
+    # QA: TextField simplificado para garantir digitação limpa
+    input_field = ft.TextField(
+        hint_text="Próxima tarefa...", 
+        width=300,
+        bgcolor="#111111",
+        on_submit=add_task
+    )
 
-    # Colunas do Kanban
-    todo_col = ft.Column(spacing=20, width=250)
-    doing_col = ft.Column(spacing=20, width=250)
-    done_col = ft.Column(spacing=20, width=250)
+    todo_list = ft.Column(spacing=10)
+    doing_list = ft.Column(spacing=10)
+    done_list = ft.Column(spacing=10)
 
-    # --- CARREGAR DADOS ---
-    if os.path.exists(data_file):
-        try:
-            with open(data_file, "r") as f:
-                for item in json.load(f):
-                    create_task_ui(item["name"], item.get("status", "todo"))
-        except: pass
+    # Função para criar colunas alvo (DragTarget) - REVISOR: Altura Fixa
+    def create_kanban_column(name, status_key, color):
+        target_list = todo_list if status_key == "todo" else (doing_list if status_key == "doing" else done_list)
+        
+        return ft.DragTarget(
+            group="kanban",
+            data=status_key,
+            on_accept=drag_accept,
+            content=ft.Container(
+                content=ft.Column([
+                    ft.Text(name, weight="bold", size=16, color=color),
+                    ft.Divider(color=color, height=2),
+                    target_list
+                ], spacing=15),
+                width=280,
+                height=550, # Altura fixa para evitar colapso (quadrado cinza)
+                padding=15,
+                bgcolor="#0D1117",
+                border_radius=15,
+                border=ft.border.all(1, "#1E1E1E")
+            )
+        )
 
-    # --- MONTAGEM DA PÁGINA (Revisor: Sem containers aninhados) ---
+    # Montagem Final da Página
     page.add(
         title,
-        ft.Row([input_field, add_btn], alignment="center"),
-        ft.Divider(height=30, color="indigoaccent"),
+        ft.Row([
+            input_field, 
+            ft.ElevatedButton(
+                content=ft.Text("ADICIONAR", color="white", weight="bold"),
+                on_click=add_task, 
+                bgcolor="#5865F2"
+            )
+        ], alignment="center"),
+        ft.Divider(height=20, color="transparent"),
         ft.Row(
-            alignment="start",
+            alignment="center",
             vertical_alignment="start",
-            spacing=30,
+            spacing=20,
             controls=[
-                ft.Column([ft.Text("PARA FAZER", size=18, weight="bold", color="white70"), ft.Divider(color="white10"), todo_col], width=250),
-                ft.Column([ft.Text("FAZENDO", size=18, weight="bold", color="amber"), ft.Divider(color="amber"), doing_col], width=250),
-                ft.Column([ft.Text("CONCLUÍDO", size=18, weight="bold", color="green"), ft.Divider(color="green"), done_col], width=250),
+                create_kanban_column("PARA FAZER", "todo", "white"),
+                create_kanban_column("FAZENDO", "doing", "amber"),
+                create_kanban_column("CONCLUÍDO", "done", "green"),
             ]
         )
     )
+
+    load_db()
+    render_board()
 
 if __name__ == "__main__":
     ft.app(target=main, view="web_browser")
