@@ -30,7 +30,8 @@ def main(page: ft.Page):
 
     # --- LÓGICA DE ARRASTE (Drag & Drop) ---
     def drag_accept(e):
-        src_idx = int(e.src_data)
+        # QA: Usando e.data para garantir compatibilidade entre versões do Flet
+        src_idx = int(e.data)
         dest_status = e.control.data
         tasks_data[src_idx]["status"] = dest_status
         save_db()
