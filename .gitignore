@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+todo_data.json
+.DS_Store

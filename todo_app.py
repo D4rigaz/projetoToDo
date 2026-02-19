@@ -1,0 +1,239 @@
+import flet as ft
+import json
+import os
+
+class Task(ft.UserControl):
+    def __init__(self, task_name, completed, task_status_change, task_delete):
+        super().__init__()
+        self.completed = completed
+        self.task_name = task_name
+        self.task_status_change = task_status_change
+        self.task_delete = task_delete
+
+    def build(self):
+        self.display_task = ft.Checkbox(
+            value=self.completed, 
+            label=self.task_name, 
+            on_change=self.status_changed,
+            fill_color=ft.colors.CYAN_700,
+        )
+        self.edit_name = ft.TextField(expand=1, border_color=ft.colors.CYAN_700)
+
+        self.display_view = ft.Container(
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    self.display_task,
+                    ft.Row(
+                        spacing=0,
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.icons.CREATE_OUTLINED,
+                                tooltip="Editar Tarefa",
+                                on_click=self.edit_clicked,
+                                icon_color=ft.colors.GREY_400,
+                            ),
+                            ft.IconButton(
+                                ft.icons.DELETE_OUTLINE,
+                                tooltip="Excluir Tarefa",
+                                on_click=self.delete_clicked,
+                                icon_color=ft.colors.RED_400,
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            padding=ft.padding.symmetric(vertical=5),
+            border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.WHITE10)),
+        )
+
+        self.edit_view = ft.Row(
+            visible=False,
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                self.edit_name,
+                ft.IconButton(
+                    icon=ft.icons.DONE_OUTLINE_OUTLINED,
+                    icon_color=ft.colors.GREEN,
+                    tooltip="Salvar Alteração",
+                    on_click=self.save_clicked,
+                ),
+            ],
+        )
+        return ft.Column(controls=[self.display_view, self.edit_view])
+
+    def edit_clicked(self, e):
+        self.edit_name.value = self.display_task.label
+        self.display_view.visible = False
+        self.edit_view.visible = True
+        self.update()
+
+    def save_clicked(self, e):
+        self.display_task.label = self.edit_name.value
+        self.task_name = self.edit_name.value
+        self.display_view.visible = True
+        self.edit_view.visible = False
+        self.update()
+        self.task_status_change(self)
+
+    def status_changed(self, e):
+        self.completed = self.display_task.value
+        self.task_status_change(self)
+
+    def delete_clicked(self, e):
+        self.task_delete(self)
+
+
+class TodoApp(ft.UserControl):
+    def __init__(self):
+        super().__init__()
+        self.tasks = []
+        self.data_file = "todo_data.json"
+        self.load_data()
+
+    def build(self):
+        self.new_task = ft.TextField(
+            hint_text="O que precisa ser feito?",
+            on_submit=self.add_clicked,
+            expand=True,
+            border_radius=10,
+            bgcolor=ft.colors.BLACK12,
+            focused_border_color=ft.colors.CYAN_700,
+        )
+        
+        self.tasks_view = ft.Column()
+
+        self.filter = ft.Tabs(
+            scrollable=False,
+            selected_index=0,
+            on_change=self.tabs_changed,
+            tabs=[ft.Tab(text="Todas"), ft.Tab(text="Ativas"), ft.Tab(text="Completas")],
+            indicator_color=ft.colors.CYAN_700,
+            label_color=ft.colors.CYAN_700,
+        )
+
+        self.items_left = ft.Text("0 tarefas restantes", color=ft.colors.GREY_500)
+
+        # Container Principal com padding e sombra
+        return ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Row(
+                        [ft.Text(value="Check-It", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.CYAN_700)],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Row(
+                        controls=[
+                            self.new_task,
+                            ft.FloatingActionButton(
+                                icon=ft.icons.ADD, 
+                                on_click=self.add_clicked,
+                                bgcolor=ft.colors.CYAN_700,
+                            ),
+                        ],
+                    ),
+                    ft.Column(
+                        spacing=20,
+                        controls=[
+                            self.filter,
+                            self.tasks_view,
+                            ft.Row(
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                controls=[
+                                    self.items_left,
+                                    ft.TextButton(
+                                        text="Limpar Completas", 
+                                        on_click=self.clear_clicked,
+                                        style=ft.ButtonStyle(color=ft.colors.RED_400)
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            padding=30,
+            bgcolor=ft.colors.GREY_900,
+            border_radius=20,
+            shadow=ft.BoxShadow(
+                spread_radius=1,
+                blur_radius=15,
+                color=ft.colors.with_opacity(0.1, ft.colors.BLACK),
+            ),
+        )
+
+    def add_clicked(self, e):
+        if self.new_task.value:
+            task = Task(self.new_task.value, False, self.update_status, self.task_delete)
+            self.tasks.append(task)
+            self.tasks_view.controls.append(task)
+            self.new_task.value = ""
+            self.update_status()
+            self.update()
+
+    def task_delete(self, task):
+        self.tasks.remove(task)
+        self.tasks_view.controls.remove(task)
+        self.update_status()
+        self.update()
+
+    def update_status(self, task=None):
+        status = self.filter.tabs[self.filter.selected_index].text
+        count = 0
+        for task in self.tasks:
+            task.visible = (
+                status == "Todas"
+                or (status == "Ativas" and not task.completed)
+                or (status == "Completas" and task.completed)
+            )
+            if not task.completed:
+                count += 1
+        
+        self.items_left.value = f"{count} tarefa(s) restante(s)"
+        self.save_data()
+        self.update()
+
+    def tabs_changed(self, e):
+        self.update_status()
+
+    def clear_clicked(self, e):
+        for task in self.tasks[:]:
+            if task.completed:
+                self.task_delete(task)
+
+    def save_data(self):
+        data = [{"name": t.task_name, "completed": t.completed} for t in self.tasks]
+        with open(self.data_file, "w") as f:
+            json.dump(data, f)
+
+    def load_data(self):
+        if os.path.exists(self.data_file):
+            with open(self.data_file, "r") as f:
+                data = json.load(f)
+                for item in data:
+                    task = Task(item["name"], item["completed"], self.update_status, self.task_delete)
+                    self.tasks.append(task)
+
+    def did_mount(self):
+        for task in self.tasks:
+            self.tasks_view.controls.append(task)
+        self.update_status()
+        self.update()
+
+def main(page: ft.Page):
+    page.title = "Minha Lista To-Do"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.theme_mode = ft.ThemeMode.DARK
+    page.window_width = 650
+    page.window_height = 800
+    page.window_resizable = False
+    
+    # Adicionando app ao centro
+    todo = TodoApp()
+    page.add(todo)
+
+if __name__ == "__main__":
+    ft.app(target=main)
