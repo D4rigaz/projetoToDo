@@ -10,6 +10,10 @@
 
 ## 📅 Jornada de Evolução
 
+### 🔵 Notificações (v5.1)
+- **Feedback Visual:** SnackBar (toast) ao adicionar, mover ou excluir tarefas.
+- **Alertas de Categoria:** Notificações em vermelho para tarefas "Urgentes".
+
 ### 🔵 Prazos (v5.0)
 - **Deadline:** Novo campo de data ao criar tarefas.
 - **Visualização:** Data exibida no rodapé esquerdo de cada etiqueta.
@@ -31,7 +35,7 @@
 - [ ] O quadro Kanban Darigaz ainda precisa de evolução contínua para atingir o nível máximo.
 - [x] Adicionar categorias coloridas para tarefas.
 - [x] Implementar datas de entrega (Deadlines).
-- [ ] Criar sistema de notificações no navegador.
+- [x] Criar sistema de notificações no navegador.
 - [ ] Deploy em servidor remoto (Replit/Vercel).
 
 ---

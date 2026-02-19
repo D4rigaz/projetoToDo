@@ -28,6 +28,16 @@ def main(page: ft.Page):
         with open(data_file, "w") as f:
             json.dump(tasks_data, f)
 
+    # --- SISTEMA DE NOTIFICAÇÕES ---
+    def show_notification(message, color="white"):
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(message, color="black", weight="bold"),
+            bgcolor=color,
+            duration=2000
+        )
+        page.snack_bar.open = True
+        page.update()
+
     # --- LÓGICA DE ARRASTE (Drag & Drop Estabilizada) ---
     def drag_accept(e):
         # Tenta obter o índice do dado do evento ou do controle de origem
@@ -41,6 +51,7 @@ def main(page: ft.Page):
             tasks_data[src_idx]["status"] = dest_status
             save_db()
             render_board()
+            show_notification(f"Tarefa movida para {dest_status.upper()}", "#3498db")
 
     def render_board():
         # Limpeza total das listas
@@ -131,11 +142,15 @@ def main(page: ft.Page):
             deadline_field.value = ""
             save_db()
             render_board()
+            
+            notif_color = "#e74c3c" if cat_name == "Urgente" else "#2ecc71"
+            show_notification(f"Tarefa '{cat_name}' adicionada!", notif_color)
 
     def delete_task(idx):
         tasks_data.pop(idx)
         save_db()
         render_board()
+        show_notification("Tarefa excluída!", "#e74c3c")
 
     # --- COMPONENTES DA UI ---
     title = ft.Text("Quadro Kanban Darigaz", size=40, weight="bold", color="#5865F2")
