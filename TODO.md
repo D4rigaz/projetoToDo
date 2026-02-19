@@ -17,4 +17,13 @@
 - **Transformação:** A lista simples de tarefas agora é um Quadro Kanban profissional.
 
 ---
+
+## 📋 Próximos Passos (Backlog)
+- [ ] O quadro Kanban Darigaz ainda precisa de evolução contínua para atingir o nível máximo.
+- [ ] Adicionar categorias coloridas para tarefas.
+- [ ] Implementar datas de entrega (Deadlines).
+- [ ] Criar sistema de notificações no navegador.
+- [ ] Deploy em servidor remoto (Replit/Vercel).
+
+---
 *Relatório consolidado pela equipe de UI/UX, Revisor e QA.*
