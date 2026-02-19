@@ -15,9 +15,10 @@ class Task(ft.UserControl):
             value=self.completed, 
             label=self.task_name, 
             on_change=self.status_changed,
-            fill_color=ft.colors.CYAN_700,
+            fill_color=ft.colors.INDIGO_ACCENT,
+            check_color=ft.colors.WHITE,
         )
-        self.edit_name = ft.TextField(expand=1, border_color=ft.colors.CYAN_700)
+        self.edit_name = ft.TextField(expand=1, border_color=ft.colors.INDIGO_ACCENT, border_radius=8)
 
         self.display_view = ft.Container(
             content=ft.Row(
@@ -29,23 +30,27 @@ class Task(ft.UserControl):
                         spacing=0,
                         controls=[
                             ft.IconButton(
-                                icon=ft.icons.CREATE_OUTLINED,
-                                tooltip="Editar Tarefa",
+                                icon=ft.icons.EDIT_ROUNDED,
+                                tooltip="Editar",
                                 on_click=self.edit_clicked,
-                                icon_color=ft.colors.GREY_400,
+                                icon_color=ft.colors.BLUE_GREY_200,
+                                icon_size=20,
                             ),
                             ft.IconButton(
-                                ft.icons.DELETE_OUTLINE,
-                                tooltip="Excluir Tarefa",
+                                ft.icons.DELETE_OUTLINE_ROUNDED,
+                                tooltip="Excluir",
                                 on_click=self.delete_clicked,
-                                icon_color=ft.colors.RED_400,
+                                icon_color=ft.colors.RED_300,
+                                icon_size=20,
                             ),
                         ],
                     ),
                 ],
             ),
-            padding=ft.padding.symmetric(vertical=5),
-            border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.WHITE10)),
+            padding=ft.padding.all(10),
+            bgcolor=ft.colors.with_opacity(0.05, ft.colors.WHITE),
+            border_radius=12,
+            margin=ft.margin.only(bottom=10),
         )
 
         self.edit_view = ft.Row(
@@ -55,9 +60,8 @@ class Task(ft.UserControl):
             controls=[
                 self.edit_name,
                 ft.IconButton(
-                    icon=ft.icons.DONE_OUTLINE_OUTLINED,
-                    icon_color=ft.colors.GREEN,
-                    tooltip="Salvar Alteração",
+                    icon=ft.icons.CHECK_CIRCLE_ROUNDED,
+                    icon_color=ft.colors.GREEN_ACCENT_400,
                     on_click=self.save_clicked,
                 ),
             ],
@@ -95,59 +99,92 @@ class TodoApp(ft.UserControl):
 
     def build(self):
         self.new_task = ft.TextField(
-            hint_text="O que precisa ser feito?",
+            hint_text="O que vamos realizar hoje?",
             on_submit=self.add_clicked,
             expand=True,
-            border_radius=10,
-            bgcolor=ft.colors.BLACK12,
-            focused_border_color=ft.colors.CYAN_700,
+            border_radius=15,
+            bgcolor=ft.colors.with_opacity(0.1, ft.colors.WHITE),
+            border_color=ft.colors.TRANSPARENT,
+            focused_border_color=ft.colors.INDIGO_ACCENT,
+            content_padding=20,
         )
         
-        self.tasks_view = ft.Column()
+        self.tasks_view = ft.Column(scroll=ft.ScrollMode.ADAPTIVE, height=400)
 
         self.filter = ft.Tabs(
-            scrollable=False,
             selected_index=0,
             on_change=self.tabs_changed,
-            tabs=[ft.Tab(text="Todas"), ft.Tab(text="Ativas"), ft.Tab(text="Completas")],
-            indicator_color=ft.colors.CYAN_700,
-            label_color=ft.colors.CYAN_700,
+            tabs=[ft.Tab(text="Todas"), ft.Tab(text="Ativas"), ft.Tab(text="Finas")],
+            indicator_color=ft.colors.INDIGO_ACCENT,
+            label_color=ft.colors.WHITE,
+            unselected_label_color=ft.colors.WHITE30,
         )
 
-        self.items_left = ft.Text("0 tarefas restantes", color=ft.colors.GREY_500)
+        self.items_left = ft.Text("0 tarefas restantes", color=ft.colors.WHITE30, size=12)
+        
+        # Barra de Progresso Moderna
+        self.progress_bar = ft.ProgressBar(
+            value=0, 
+            width=600, 
+            color=ft.colors.INDIGO_ACCENT, 
+            bgcolor=ft.colors.WHITE10,
+            border_radius=5
+        )
+        self.progress_text = ft.Text("0% concluído", size=12, color=ft.colors.INDIGO_ACCENT, weight=ft.FontWeight.BOLD)
 
-        # Container Principal com padding e sombra
         return ft.Container(
             content=ft.Column(
                 controls=[
+                    # Header
                     ft.Row(
-                        [ft.Text(value="Check-It", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.CYAN_700)],
+                        [
+                            ft.Icon(ft.icons.CHECKLIST_ROUNDED, color=ft.colors.INDIGO_ACCENT, size=40),
+                            ft.Text(value="Check-It", size=32, weight=ft.FontWeight.BOLD),
+                        ],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
+                    ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                    
+                    # Progress Section
+                    ft.Column([
+                        ft.Row([ft.Text("Seu Progresso", size=14, weight=ft.FontWeight.W_500), self.progress_text], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                        self.progress_bar,
+                    ], spacing=5),
+                    
+                    ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                    
+                    # Input Section
                     ft.Row(
                         controls=[
                             self.new_task,
-                            ft.FloatingActionButton(
-                                icon=ft.icons.ADD, 
-                                on_click=self.add_clicked,
-                                bgcolor=ft.colors.CYAN_700,
+                            ft.Container(
+                                content=ft.IconButton(
+                                    icon=ft.icons.ADD_ROUNDED, 
+                                    on_click=self.add_clicked,
+                                    icon_color=ft.colors.WHITE,
+                                    icon_size=30,
+                                ),
+                                bgcolor=ft.colors.INDIGO_ACCENT,
+                                border_radius=15,
+                                padding=5,
                             ),
                         ],
                     ),
+                    
+                    # List Section
                     ft.Column(
-                        spacing=20,
+                        spacing=15,
                         controls=[
                             self.filter,
                             self.tasks_view,
                             ft.Row(
                                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
                                     self.items_left,
                                     ft.TextButton(
                                         text="Limpar Completas", 
                                         on_click=self.clear_clicked,
-                                        style=ft.ButtonStyle(color=ft.colors.RED_400)
+                                        style=ft.ButtonStyle(color=ft.colors.RED_ACCENT_200)
                                     ),
                                 ],
                             ),
@@ -155,14 +192,11 @@ class TodoApp(ft.UserControl):
                     ),
                 ],
             ),
-            padding=30,
+            padding=40,
+            width=500,
             bgcolor=ft.colors.GREY_900,
-            border_radius=20,
-            shadow=ft.BoxShadow(
-                spread_radius=1,
-                blur_radius=15,
-                color=ft.colors.with_opacity(0.1, ft.colors.BLACK),
-            ),
+            border_radius=30,
+            border=ft.border.all(1, ft.colors.WHITE10),
         )
 
     def add_clicked(self, e):
@@ -182,17 +216,27 @@ class TodoApp(ft.UserControl):
 
     def update_status(self, task=None):
         status = self.filter.tabs[self.filter.selected_index].text
-        count = 0
+        count_active = 0
+        count_completed = 0
+        
         for task in self.tasks:
             task.visible = (
                 status == "Todas"
                 or (status == "Ativas" and not task.completed)
-                or (status == "Completas" and task.completed)
+                or (status == "Finas" and task.completed)
             )
             if not task.completed:
-                count += 1
+                count_active += 1
+            else:
+                count_completed += 1
         
-        self.items_left.value = f"{count} tarefa(s) restante(s)"
+        # Atualiza progresso
+        total = len(self.tasks)
+        progress = (count_completed / total) if total > 0 else 0
+        self.progress_bar.value = progress
+        self.progress_text.value = f"{int(progress * 100)}% concluído"
+        
+        self.items_left.value = f"{count_active} tarefa(s) restante(s)"
         self.save_data()
         self.update()
 
