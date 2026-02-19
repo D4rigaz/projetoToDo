@@ -7,7 +7,7 @@ def main(page: ft.Page):
     page.title = "Quadro Kanban Darigaz"
     page.bgcolor = "#000000"
     page.theme_mode = "dark"
-    page.padding = 30
+    page.padding = 40
     page.window_width = 1100
     page.window_height = 850
     page.horizontal_alignment = "center"
@@ -28,47 +28,40 @@ def main(page: ft.Page):
         with open(data_file, "w") as f:
             json.dump(tasks_data, f)
 
-    # --- LÓGICA DE ARRASTE (Drag & Drop) ---
+    # --- LÓGICA DE ARRASTE (Drag & Drop Estabilizada) ---
     def drag_accept(e):
-<<<<<<< HEAD
-        # QA: Usando e.data para garantir compatibilidade entre versões do Flet
-=======
->>>>>>> DEV
         src_idx = int(e.data)
         dest_status = e.control.data
         
-        # QA: Sincronização de Estado (Não deixa sumir)
+        # Sincronização de Dados antes da Renderização
         tasks_data[src_idx]["status"] = dest_status
         save_db()
         render_board()
 
     def render_board():
-        # Limpando as colunas
+        # Limpeza total das listas
         todo_list.controls.clear()
         doing_list.controls.clear()
         done_list.controls.clear()
 
         for index, task in enumerate(tasks_data):
-            # UI/UX: Card COMPACTO (Sò o tamanho necessário)
+            # UI/UX: Card COMPACTO (Ajustado para o tamanho do nome)
             task_card = ft.Draggable(
                 group="kanban",
                 data=str(index),
                 content=ft.Container(
-                    content=ft.Column([
-                        ft.Text(task["name"], weight="bold", size=13, color="white"),
-                        ft.Row([
-                            ft.Text("Mova-me", size=9, color="white30"),
-                            ft.TextButton(
-                                content=ft.Icon("delete", color="#FF5555", size=14),
-                                on_click=lambda e, idx=index: delete_task(idx)
-                            )
-                        ], alignment="spaceBetween", spacing=0)
-                    ], spacing=2, tight=True),
+                    content=ft.Row([
+                        ft.Text(task["name"], weight="bold", size=13, color="white", expand=True),
+                        ft.TextButton(
+                            content=ft.Icon("delete", color="#FF5555", size=14),
+                            on_click=lambda e, idx=index: delete_task(idx)
+                        )
+                    ], alignment="spaceBetween", vertical_alignment="center"),
                     bgcolor="#1A1A1A",
-                    padding=8,
+                    padding=10,
                     border_radius=8,
                     border=ft.border.all(1, "#333333"),
-                    width=210, # Largura compacta
+                    width=210, # Largura fixa para evitar o bloco gigante
                 )
             )
 
@@ -91,19 +84,19 @@ def main(page: ft.Page):
         render_board()
 
     # --- COMPONENTES DA UI ---
-    title = ft.Text("Quadro Kanban Darigaz", size=38, weight="bold", color="#5865F2")
+    title = ft.Text("Quadro Kanban Darigaz", size=40, weight="bold", color="#5865F2")
     
     input_field = ft.TextField(
         hint_text="Próxima tarefa...", 
-        width=250,
+        width=280,
         bgcolor="#111111",
         on_submit=add_task,
         text_size=14
     )
 
-    todo_list = ft.Column(spacing=8, horizontal_alignment="center")
-    doing_list = ft.Column(spacing=8, horizontal_alignment="center")
-    done_list = ft.Column(spacing=8, horizontal_alignment="center")
+    todo_list = ft.Column(spacing=10, horizontal_alignment="center")
+    doing_list = ft.Column(spacing=10, horizontal_alignment="center")
+    done_list = ft.Column(spacing=10, horizontal_alignment="center")
 
     def create_kanban_column(name, status_key, color):
         target_list = todo_list if status_key == "todo" else (doing_list if status_key == "doing" else done_list)
@@ -114,15 +107,15 @@ def main(page: ft.Page):
             on_accept=drag_accept,
             content=ft.Container(
                 content=ft.Column([
-                    ft.Text(name, weight="bold", size=15, color=color),
+                    ft.Text(name, weight="bold", size=16, color=color),
                     ft.Divider(color=color, height=2),
                     target_list
-                ], spacing=10, horizontal_alignment="center"),
+                ], spacing=15, horizontal_alignment="center"),
                 width=260,
-                height=550,
-                padding=10,
+                height=550, # Altura fixa para estabilidade visual
+                padding=12,
                 bgcolor="#0D1117",
-                border_radius=12,
+                border_radius=15,
                 border=ft.border.all(1, "#1E1E1E")
             )
         )
@@ -136,14 +129,14 @@ def main(page: ft.Page):
                 content=ft.Text("ADICIONAR", color="white", weight="bold"),
                 on_click=add_task, 
                 bgcolor="#5865F2",
-                height=40
+                height=45
             )
         ], alignment="center"),
         ft.Divider(height=20, color="transparent"),
         ft.Row(
             alignment="center",
             vertical_alignment="start",
-            spacing=15,
+            spacing=20,
             controls=[
                 create_kanban_column("PARA FAZER", "todo", "white"),
                 create_kanban_column("FAZENDO", "doing", "amber"),
