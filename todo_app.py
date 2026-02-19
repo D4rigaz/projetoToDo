@@ -280,4 +280,6 @@ def main(page: ft.Page):
     page.add(todo)
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    # Para rodar no navegador, usamos view=ft.AppView.WEB_BROWSER
+    # Para rodar como app Windows, basta remover o parâmetro 'view'
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER)

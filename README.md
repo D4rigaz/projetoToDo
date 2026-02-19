@@ -27,6 +27,8 @@ Um gerenciador de tarefas moderno e minimalista para Windows, desenvolvido com *
    python todo_app.py
    ```
 
+> **Dica:** O app abrirá automaticamente no seu navegador padrão! 🌐
+
 ## 🛠️ Tecnologias
 - [Python](https://www.python.org/)
 - [Flet](https://flet.dev/)
