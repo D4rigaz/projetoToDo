@@ -4,7 +4,7 @@ import os
 
 def main(page: ft.Page):
     # --- REVISOR: Configurações de Segurança de Layout ---
-    page.title = "CHECK-IT: Total Stable"
+    page.title = "quadro to do list Darigaz"
     page.bgcolor = "#000000"
     page.horizontal_alignment = "center"
     page.padding = 50
@@ -58,10 +58,10 @@ def main(page: ft.Page):
             input_field.value = ""
             save_data()
 
-    # --- COMPONENTES (Revisor: Sem NENHUM argumento 'text' nos botões) ---
-    title = ft.Text("CHECK-IT", size=60, weight="bold", color="#5865F2")
+    # --- COMPONENTES (UI/UX: Novo Título Personalizado) ---
+    title = ft.Text("quadro to do list Darigaz", size=45, weight="bold", color="#5865F2", text_align="center")
     
-    subtitle = ft.Text("Gerenciador de Tarefas - Versão Agnóstica", color="white70")
+    subtitle = ft.Text("Seu gerenciador de tarefas personalizado", color="white70")
 
     input_field = ft.TextField(
         hint_text="Próxima tarefa...",
