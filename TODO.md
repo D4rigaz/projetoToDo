@@ -1,26 +1,25 @@
-# 📝 quadro to do list Darigaz: Histórico de Desenvolvimento
+# 📝 quadro to do list Darigaz: Evolução KANBAN
 
-## 🏆 Status Final: APROVADO (v3.0 - Rebranding Darigaz)
-- **Título:** quadro to do list Darigaz.
-- **Estabilidade:** Hierarquia Zero (sem containers) para evitar o "quadrado cinza".
-- **Compatibilidade:** Uso de estruturas de conteúdo genéricas (Agnóstico).
-- **Identidade:** Visual Moderno com o toque pessoal do usuário.
+## 🏆 Status Atual: KANBAN BOARD (v4.0 - Evolution Edition)
+- **Modelo de Trabalho:** Quadro Kanban com 3 colunas (Para Fazer, Fazendo, Concluído).
+- **Estabilidade:** Hierarquia plana para evitar o "quadrado cinza".
+- **Interação:** Botões de movimento lateral (`<` e `>`) para transição de estados.
+- **Persistência:** Novo arquivo de dados `kanban_data.json`.
 
 ---
 
-## 📅 Evolução Técnica
+## 📅 Jornada de Evolução
+
+### 🔵 Evolução Kanban (v4.0)
+- **Transformação:** A lista simples de tarefas agora é um Quadro Kanban profissional.
+- **Melhoria UI:** Colunas coloridas (Índigo, Âmbar, Verde) para melhor distinção de progresso.
+- **Logística:** Adição de botões para mover tarefas entre colunas de forma estável.
 
 ### 🟣 Rebranding Darigaz (v3.0)
-- **Mudança:** Título alterado para "quadro to do list Darigaz" a pedido do usuário.
-- **Validação:** QA gerou novas evidências visuais comprovando a mudança de marca com sucesso.
-
-### 🔴 Crise dos Atributos (v2.1)
-- **Problema:** Erros constantes de `unexpected keyword argument`.
-- **Solução (QA/Revisor):** Uso de botões agnósticos com `content=ft.Text()`.
+- **Mudança:** Nome atualizado para "quadro to do list Darigaz".
 
 ### 🚨 Crise do Quadrado Cinza (v2.2)
-- **Problema:** Colapso gráfico no navegador.
-- **Solução (Revisor):** Achatamento total da hierarquia (Hierarquia Zero).
+- **Resolução Final:** Uso de componentes puros e independentes na página.
 
 ---
 *Relatório consolidado pela equipe de UI/UX, Revisor e QA.*
