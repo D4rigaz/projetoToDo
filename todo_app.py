@@ -4,16 +4,16 @@ import os
 
 def main(page: ft.Page):
     # --- REVISOR: Configurações de Segurança de Layout ---
-    page.title = "CHECK-IT: Modern Flat"
-    page.bgcolor = "#0D1117" # Fundo escuro premium
+    page.title = "CHECK-IT: Total Stable"
+    page.bgcolor = "#000000"
     page.horizontal_alignment = "center"
-    page.padding = 40
-    page.spacing = 15
+    page.padding = 50
+    page.spacing = 20
     page.theme_mode = "dark"
 
     data_file = "todo_data.json"
 
-    # --- LÓGICA DO QA ---
+    # --- LÓGICA DO QA (CRUD) ---
     def save_data():
         data = []
         for ctrl in tasks_list.controls:
@@ -29,23 +29,24 @@ def main(page: ft.Page):
         save_data()
 
     def add_task_ui(name, completed=False):
-        # QA: Row simples, sem containers para evitar erro de renderização
+        # QA: Usando 'content' em vez de 'text' para garantir compatibilidade
+        btn_delete = ft.TextButton(
+            content=ft.Text("EXCLUIR", color="#FF5555"),
+            on_click=lambda _: delete_task(task_row)
+        )
+
         task_row = ft.Row(
             alignment="center",
-            width=500,
+            width=550,
             controls=[
                 ft.Checkbox(
                     label=name, 
                     value=completed, 
                     on_change=lambda _: save_data(),
                     expand=True,
-                    fill_color="#5865F2" # Cor Indigo/Blurple
+                    fill_color="#5865F2"
                 ),
-                ft.TextButton(
-                    "EXCLUIR", 
-                    on_click=lambda _: delete_task(task_row),
-                    font_color="#F85149"
-                )
+                btn_delete
             ]
         )
         tasks_list.controls.append(task_row)
@@ -57,31 +58,28 @@ def main(page: ft.Page):
             input_field.value = ""
             save_data()
 
-    # --- COMPONENTES (Design Moderno com Estrutura Plana) ---
+    # --- COMPONENTES (Revisor: Sem NENHUM argumento 'text' nos botões) ---
     title = ft.Text("CHECK-IT", size=60, weight="bold", color="#5865F2")
     
-    subtitle = ft.Text("Organize sua rotina com estilo", color="#8B949E", size=16)
+    subtitle = ft.Text("Gerenciador de Tarefas - Versão Agnóstica", color="white70")
 
     input_field = ft.TextField(
         hint_text="Próxima tarefa...",
         width=300,
-        bgcolor="#161B22",
-        border_color="#30363D",
-        focused_border_color="#5865F2",
-        border_radius=10
+        bgcolor="#1a1a1a",
+        border_color="#5865F2",
+        on_submit=on_add_click
     )
 
-    # Botão Moderno (Usando ElevatedButton para estabilidade total)
+    # QA: Botão de adicionar sem o argumento 'text'
     add_btn = ft.ElevatedButton(
-        "ADICIONAR",
+        content=ft.Text("ADICIONAR TAREFA", color="white", weight="bold"),
         on_click=on_add_click,
         bgcolor="#5865F2",
-        color="white",
-        height=50,
-        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+        height=50
     )
 
-    tasks_list = ft.Column(width=500, spacing=5, horizontal_alignment="center")
+    tasks_list = ft.Column(width=550, horizontal_alignment="center")
 
     # --- CARREGAR DADOS ---
     if os.path.exists(data_file):
@@ -92,12 +90,11 @@ def main(page: ft.Page):
         except:
             pass
 
-    # --- MONTAGEM (Revisor: Adição Direta e Sequencial) ---
+    # --- MONTAGEM ---
     page.add(title)
     page.add(subtitle)
-    page.add(ft.Divider(height=10, color="transparent"))
     page.add(ft.Row([input_field, add_btn], alignment="center", spacing=10))
-    page.add(ft.Divider(height=20, color="#30363D"))
+    page.add(ft.Divider(height=20, color="#5865F2"))
     page.add(tasks_list)
 
 if __name__ == "__main__":
