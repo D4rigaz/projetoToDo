@@ -10,6 +10,10 @@
 
 ## 📅 Jornada de Evolução
 
+### 🔵 Prazos (v5.0)
+- **Deadline:** Novo campo de data ao criar tarefas.
+- **Visualização:** Data exibida no rodapé esquerdo de cada etiqueta.
+
 ### 🔵 Categorias Coloridas (v4.6)
 - **Visualização:** Adicionado indicador lateral de cor nos cards.
 - **Interação:** Dropdown para seleção de categoria ao criar tarefa.
@@ -26,7 +30,7 @@
 ## 📋 Próximos Passos (Backlog)
 - [ ] O quadro Kanban Darigaz ainda precisa de evolução contínua para atingir o nível máximo.
 - [x] Adicionar categorias coloridas para tarefas.
-- [ ] Implementar datas de entrega (Deadlines).
+- [x] Implementar datas de entrega (Deadlines).
 - [ ] Criar sistema de notificações no navegador.
 - [ ] Deploy em servidor remoto (Replit/Vercel).
 

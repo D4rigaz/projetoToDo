@@ -4,6 +4,7 @@ Um gerenciador de tarefas moderno e minimalista para Windows, desenvolvido com *
 
 ## ✨ Funcionalidades
 - **Quadro Kanban:** Organize tarefas em colunas: Para Fazer, Fazendo e Concluído.
+- **Prazos (Deadlines):** Adicione datas de entrega para suas tarefas e visualize no card.
 - **Categorias Coloridas:** Classifique tarefas com cores (Trabalho, Pessoal, Urgente, Outros).
 - **Interface Moderna:** Design em Dark Mode com visual polido e intuitivo.
 - **Drag & Drop:** Arraste e solte tarefas entre as colunas para atualizar o status.

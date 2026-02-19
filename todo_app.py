@@ -68,14 +68,25 @@ def main(page: ft.Page):
                         ft.Container(
                             content=ft.Text(
                                 value=task["name"],
-                                size=12,
+                                size=11,
                                 weight="bold",
                                 color="white",
                                 text_align=ft.TextAlign.CENTER,
                             ),
                             alignment=ft.Alignment(0, 0),
                             expand=True,
-                            padding=ft.padding.only(top=12, left=5, right=5, bottom=5)
+                            padding=ft.padding.only(top=10, left=5, right=5, bottom=12)
+                        ),
+                        # Deadline (Rodapé Esquerdo)
+                        ft.Container(
+                            content=ft.Text(
+                                value=task.get("deadline", ""),
+                                size=9,
+                                color="#AAAAAA",
+                                italic=True
+                            ),
+                            bottom=2,
+                            left=5
                         ),
                         # Botão Excluir (Canto Superior Direito) - Estilo Container para evitar erros de Ícone
                         ft.Container(
@@ -113,9 +124,11 @@ def main(page: ft.Page):
                 "name": input_field.value, 
                 "status": "todo",
                 "category": cat_name,
-                "color": cat_color
+                "color": cat_color,
+                "deadline": deadline_field.value if deadline_field.value else ""
             })
             input_field.value = ""
+            deadline_field.value = ""
             save_db()
             render_board()
 
@@ -146,11 +159,19 @@ def main(page: ft.Page):
     )
     
     input_field = ft.TextField(
-        hint_text="Próxima tarefa...", 
-        width=280,
+        hint_text="Tarefa...", 
+        width=200,
         bgcolor="#111111",
         on_submit=add_task,
         text_size=14
+    )
+
+    deadline_field = ft.TextField(
+        hint_text="Data (ex: 25/12)", 
+        width=100,
+        bgcolor="#111111",
+        on_submit=add_task,
+        text_size=12
     )
 
     todo_list = ft.Row(wrap=True, spacing=10, width=240, alignment=ft.MainAxisAlignment.CENTER)
@@ -185,6 +206,7 @@ def main(page: ft.Page):
         ft.Row([
             selected_category,
             input_field, 
+            deadline_field,
             ft.ElevatedButton(
                 content=ft.Text("ADICIONAR", color="white", weight="bold"),
                 on_click=add_task, 

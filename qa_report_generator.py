@@ -39,5 +39,5 @@ def generate_evidence(test_name, status, version):
     return filepath
 
 if __name__ == "__main__":
-    path = generate_evidence("Arraste Estabilizado", "SUCESSO", "v4.9_DragDrop")
+    path = generate_evidence("Prazos Implementados", "SUCESSO", "v5.0_Deadlines")
     print(f"Evidência JPG gerada em: {path}")
